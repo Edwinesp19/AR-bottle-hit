@@ -20,6 +20,9 @@ public class BallThower : MonoBehaviour
     public float smooth = 0.7f;
     Rigidbody rb;
 
+    public Camera mainCamera;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -49,13 +52,15 @@ public class BallThower : MonoBehaviour
         rb.velocity = Vector3.zero;
         rb.useGravity = false;
         Ball.transform.position = transform.position;
+
+
     }
 
     void PickupBall()
     {
         Vector3 mousePos = Input.mousePosition;
-        mousePos.z = Camera.main.nearClipPlane * 5f;
-        newPosition = Camera.main.ScreenToWorldPoint(mousePos);
+        mousePos.z = mainCamera.nearClipPlane * 5f;
+        newPosition = mainCamera.ScreenToWorldPoint(mousePos);
         Ball.transform.localPosition = Vector3.Lerp(Ball.transform.localPosition, newPosition, 80f * Time.deltaTime);
     }
 
@@ -74,7 +79,7 @@ public class BallThower : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             RaycastHit _hit;
 
             if (Physics.Raycast(ray, out _hit, 100f))
@@ -102,10 +107,7 @@ public class BallThower : MonoBehaviour
                 rb.AddForce(new Vector3((angle.x * BallSpeed), (angle.y * BallSpeed / 3), (angle.z * BallSpeed) * 2));
                 rb.useGravity = true;
                 holding = false;
-                thrown = true;
-                //add a taptic feedback  here
-                // Handheld.Vibrate();
-
+                thrown = true; 
 
                 Invoke("ResetBall", 2f);
             }
@@ -116,7 +118,7 @@ public class BallThower : MonoBehaviour
 
     private void CalAngle()
     {
-        angle = Camera.main.ScreenToWorldPoint(new Vector3(endPos.x, endPos.y + 50f, (Camera.main.nearClipPlane + 5)));
+        angle = mainCamera.ScreenToWorldPoint(new Vector3(endPos.x, endPos.y + 50f, mainCamera.nearClipPlane + 5));
     }
 
     void CalSpeed()
